@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css";
 import Layout, { Content, Footer, Header } from "antd/lib/layout/layout";
-import { Input, Menu, Row, Col, Statistic } from "antd";
+import { Input, Menu, Row, Col, Statistic, Table, Tag, Space } from "antd";
 import { useState } from "react";
 import TextArea from "antd/lib/input/TextArea";
 
@@ -39,7 +39,7 @@ function App() {
       .then(() => setTempFront(Date.now() - time));
 
     response.resultados.forEach((element) => {
-      console.log(element);
+      //console.log(Object.keys(element));
     });
   }
 
@@ -71,11 +71,18 @@ function App() {
               value={response.temp_process + "ms"}
             />
           </Col>
-          <Col span={4}>
+          <Col span={6}>
             <Statistic title="Temp.Resp front" value={tempFront + "ms"} />
           </Col>
+          <Col span={6}>
+            <Statistic title="Qtd resultados" value={response.resultados_qtd} />
+          </Col>
         </Row>
-        <TextArea value={JSON.stringify(response)} />
+        <TextArea
+          value={JSON.stringify(response)}
+          size="large"
+          style={{ height: 300 }}
+        />
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Ant Design ©2018 Created by Ant UED
