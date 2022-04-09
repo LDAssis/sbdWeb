@@ -1,13 +1,13 @@
 import React from "react";
 import "./App.css";
 import Layout, { Content, Footer, Header } from "antd/lib/layout/layout";
-import { Input, Menu, Row, Col, Statistic } from "antd";
+import { Input, Menu } from "antd";
 import { useState } from "react";
 import TextArea from "antd/lib/input/TextArea";
 
 const { Search } = Input;
 
-function App() {
+async function App() {
   let [query, setQuery] = useState<string>();
   let [response, setResponse] = useState({
     temp_process: Number(),
@@ -16,14 +16,11 @@ function App() {
     resultados: [],
   });
 
-  let [tempFront, setTempFront] = useState<Number>();
-
   function handleChangeQuery(e: React.ChangeEvent<HTMLInputElement>) {
     setQuery(e.target.value);
   }
 
   function doRequest() {
-    const time = Date.now();
     const requestOptions = {
       method: "POST",
       headers: {
@@ -35,12 +32,10 @@ function App() {
 
     fetch("http://127.0.0.1:8080/Selects", requestOptions)
       .then((response) => response.json())
-      .then((data) => setResponse(data))
-      .then(() => setTempFront(Date.now() - time));
+      .then((data) => setResponse(data));
 
-    response.resultados.forEach((element) => {
-      console.log(element);
-    });
+    console.log(response.temp_process);
+    console.log(JSON.stringify({ query: query }));
   }
 
   return (
@@ -64,18 +59,7 @@ function App() {
         </Menu>
       </Header>
       <Content style={{ padding: "0 50px" }}>
-        <Row gutter={16}>
-          <Col span={6}>
-            <Statistic
-              title="Temp.Resp do banco"
-              value={response.temp_process + "ms"}
-            />
-          </Col>
-          <Col span={4}>
-            <Statistic title="Temp.Resp front" value={tempFront + "ms"} />
-          </Col>
-        </Row>
-        <TextArea value={JSON.stringify(response)} />
+        <TextArea value={typeof response} />
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Ant Design ©2018 Created by Ant UED
