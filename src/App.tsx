@@ -1,11 +1,13 @@
-import React from "react";
 import "./App.css";
 import Layout, { Content, Footer, Header } from "antd/lib/layout/layout";
-import { Input, Menu, Row, Col, Statistic, Table, Tag, Space } from "antd";
+import { Input, Menu, Row, Col, Statistic, Spin } from "antd";
 import { useState } from "react";
 import TextArea from "antd/lib/input/TextArea";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const { Search } = Input;
+
+const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 function App() {
   let [query, setQuery] = useState<string>();
@@ -16,6 +18,8 @@ function App() {
     resultados: [],
   });
 
+  const [done, setDone] = useState<boolean>(true);
+
   let [tempFront, setTempFront] = useState<Number>(0);
 
   function handleChangeQuery(e: React.ChangeEvent<HTMLInputElement>) {
@@ -24,6 +28,8 @@ function App() {
 
   function doRequest() {
     const time = Date.now();
+    setDone(false);
+
     const requestOptions = {
       method: "POST",
       headers: {
@@ -36,13 +42,14 @@ function App() {
     fetch("http://127.0.0.1:8080/Selects", requestOptions)
       .then((response) => response.json())
       .then((data) => setResponse(data))
-      .then(() => setTempFront(Date.now() - time));
-
+      .then(() => setTempFront(Date.now() - time))
+      .then(() => setDone(true));
+    var arrayofAtributes;
     response.resultados.forEach((element) => {
-      console.log(Object.keys(element));
+      arrayofAtributes = Object.keys(element);
     });
+    console.log(arrayofAtributes);
   }
-
   return (
     <Layout className="layout">
       <Header>
@@ -54,6 +61,7 @@ function App() {
             onChange={handleChangeQuery}
             onSearch={doRequest}
             enterButton
+            disabled={!done}
           />
         </Menu>
       </Header>
@@ -80,6 +88,8 @@ function App() {
       </Content>
       <Footer style={{ textAlign: "center" }}>
         Ant Design ©2018 Created by Ant UED
+        <br></br>
+        {!done ? <Spin indicator={antIcon} /> : ""}
       </Footer>
     </Layout>
   );
