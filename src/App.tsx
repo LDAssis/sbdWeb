@@ -16,7 +16,7 @@ function App() {
     resultados: [],
   });
 
-  let [tempFront, setTempFront] = useState<Number>();
+  let [tempFront, setTempFront] = useState<Number>(0);
 
   function handleChangeQuery(e: React.ChangeEvent<HTMLInputElement>) {
     setQuery(e.target.value);
@@ -39,7 +39,7 @@ function App() {
       .then(() => setTempFront(Date.now() - time));
 
     response.resultados.forEach((element) => {
-      //console.log(Object.keys(element));
+      console.log(Object.keys(element));
     });
   }
 
@@ -47,15 +47,9 @@ function App() {
     <Layout className="layout">
       <Header>
         <div className="logo" />
-        <Menu
-          style={{
-            alignContent: "center",
-          }}
-          theme="dark"
-          mode="horizontal"
-          defaultSelectedKeys={["2"]}
-        >
+        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
           <Search
+            style={{ marginTop: 15 }}
             placeholder="input search text"
             onChange={handleChangeQuery}
             onSearch={doRequest}
