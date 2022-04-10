@@ -1,7 +1,7 @@
 import "./App.css";
 import Layout, { Content, Footer, Header } from "antd/lib/layout/layout";
-import { Input, Menu, Row, Col, Statistic, Spin } from "antd";
-import { useState } from "react";
+import { Input, Menu, Row, Col, Statistic, Spin, Table } from "antd";
+import React, { useState } from "react";
 import TextArea from "antd/lib/input/TextArea";
 import { LoadingOutlined } from "@ant-design/icons";
 
@@ -22,38 +22,69 @@ function App() {
 
   let [tempFront, setTempFront] = useState<Number>(0);
 
+  let [atributesF, setAtributes] = useState([
+    {
+      title: "",
+      dataIndex: "",
+      key: "",
+    },
+  ]);
+
   function handleChangeQuery(e: React.ChangeEvent<HTMLInputElement>) {
     setQuery(e.target.value);
   }
 
-  function doRequest() {
-    const time = Date.now();
+  async function doRequest() {
+    setAtributes([
+      {
+        title: "",
+        dataIndex: "",
+        key: "",
+      },
+    ]);
+
+    for (var key in atributesF) {
+      delete atributesF[key];
+    }
+
     setDone(false);
 
+    const time = Date.now();
     const requestOptions = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify({ query: query }),
     };
 
-    fetch("http://127.0.0.1:8080/Selects", requestOptions)
-      .then((response) => response.json())
-      .then((data) => setResponse(data))
-      .then(() => setTempFront(Date.now() - time))
-      .then(() => setDone(true));
-    var arrayofAtributes;
+    await fetch("http://127.0.0.1:8080/Selects", requestOptions)
+      .then(async (response) => await response.json())
+      .then(async (data) => await setResponse(data))
+      .then(async () => await setTempFront(Date.now() - time))
+      .then(async () => await setDone(true));
+
+    var arrayOfAttributes = [{}];
+
     response.resultados.forEach((element) => {
-      arrayofAtributes = Object.keys(element);
+      arrayOfAttributes = Object.keys(element);
     });
-    console.log(arrayofAtributes);
+
+    arrayOfAttributes.forEach((element) => {
+      atributesF.push({
+        title: JSON.stringify(element).replace(/"/g, ""),
+        dataIndex: JSON.stringify(element).replace(/"/g, ""),
+        key: JSON.stringify(element).replace(/"/g, ""),
+      });
+    });
+
+    console.log(atributesF);
+    setAtributes(atributesF);
   }
+
   return (
     <Layout className="layout">
       <Header>
-        <div className="logo" />
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={["2"]}>
           <Search
             style={{ marginTop: 15 }}
@@ -83,7 +114,12 @@ function App() {
         <TextArea
           value={JSON.stringify(response)}
           size="large"
-          style={{ height: 300 }}
+          style={{ height: 100 }}
+        />
+        <Table
+          dataSource={response.resultados}
+          columns={atributesF}
+          loading={!done}
         />
       </Content>
       <Footer style={{ textAlign: "center" }}>
